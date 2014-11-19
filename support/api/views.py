@@ -5,7 +5,10 @@
 #
 import logging
 import urllib2
+from urlparse import urlparse
 from collections import OrderedDict
+from binascii import a2b_base64
+import tempfile
 
 from django.http.request import QueryDict
 from django.conf import settings
@@ -142,6 +145,20 @@ class NewIssueView(generics.GenericAPIView):
                                            priority=obj.priority, type=obj.type, subsystem=obj.subsystem)
 
                     log.debug(ret)
+
+                    if obj.screenshot:
+                        parsed_url = urlparse(ret[0]['location'])
+                        issue_path = parsed_url.path
+                        issue_id = issue_path.split("/")[-1]
+                        # strip beggining data:image/png;base64,
+                        data_str = obj.screenshot[22:]
+                        data = a2b_base64(data_str)
+                        with tempfile.TemporaryFile() as tmp_file:
+                            tmp_file.write(data_str)
+                            ret2 = conn.createAttachment(issue_id, 'screenshot.png', tmp_file)
+                            ret_data = ret2.read()
+                            log.debug(ret_data)
+
                     ret_dict = obj.to_dict()
                     try:
                         del(ret_dict['project_id'])

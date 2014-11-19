@@ -23,6 +23,7 @@ class YouTrackIssueSerializer(serializers.Serializer):
     priority_id = serializers.IntegerField(required=False)
     subject = serializers.CharField(max_length=200)
     description = serializers.CharField(max_length=1000)
+    screenshot = serializers.CharField(required=False)
     extra = DictField(required=False)
 
     def restore_object(self, attrs, instance=None):

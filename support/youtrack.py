@@ -26,6 +26,7 @@ class YouTrackIssue(object):
     description = ""
     subsystem = None
     extra = None
+    screenshot = None
 
     template_name = "default.html"
 
